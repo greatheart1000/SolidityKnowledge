@@ -51,7 +51,13 @@ ERC20的token；然后换一个地址，调用requestToken 这个新地址就得
 理解了 token地址填错了 虽然我授权airdrop地址token了 但是转账ERC20 token仍然走的是原来的ERC20合约地址 而不是airdrop合约地址  <br>
 但是 好像 transferETH和其他的函数getSum是有问题的  <br>
 
+#### 荷兰拍卖
+荷兰拍卖（`Dutch Auction`）是一种特殊的拍卖形式。 亦称“减价拍卖”，它是指拍卖标的的竞价由高到低依次递减直到第一个竞买人应价（达到或超过底价）时击槌成交的一种拍卖。<br>
+
+
 在 Solidity 的内联 Yul/assembly 里，这几个指令都是对 EVM 256-bit 字（word）做位运算或位操作，它们直接对应底层的 EVM opcode，通常比高层 Solidity 运算更**节省 gas**，也更灵活地做**打包/解包**、**掩码**、**位段提取**等操作。
+
+
 
 下面一一说明它们的作用、参数含义和典型用途：
 
