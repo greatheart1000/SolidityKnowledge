@@ -23,6 +23,27 @@ Legacy交易的结构包括以下字段： <br>
 ● data：交易的附加数据（可选） <br>
 ● v, r, s：交易的签名 <br>
 
+#### EIP 全称 `Ethereum Improvement Proposals`(以太坊改进建议)  <br>
+是以太坊开发者社区提出的改进建议, 是一系列以编号排定的文件, 类似互联网上IETF的RFC。`EIP`可以是 `Ethereum` 生态中任意领域的改进, 比如新特性、ERC、协议改进、编程工具等等。 <br>
+
+#### ERC`全称 Ethereum Request For Comment (以太坊意见征求稿) <br>
+用以记录以太坊上应用级的各种开发标准和协议。如典型的Token标准(`ERC20`, `ERC721`)、名字注册(`ERC26`, `ERC13`), URI范式(`ERC67`), Library/Package格式(`EIP82`), 钱包格式 <br>(`EIP75`,`EIP85`)。
+ERC协议标准是影响以太坊发展的重要因素, 像`ERC20`, `ERC223`, `ERC721`, `ERC777`等, 都是对以太坊生态产生了很大影响。 
+所以最终结论：`EIP`包含`ERC`。 <br>
+ERC165就是检查一个智能合约是不是支持了`ERC721`，`ERC1155`的接口。 <br>
+`IERC721`是`ERC721`标准的接口合约，规定了`ERC721`要实现的基本函数。 <br>
+它利用`tokenId`来表示特定的非同质化代币，授权或转账都要明确`tokenId`；而`ERC20`只需要明确转账的数额即可。<br>
+
+#### Facet代币水龙头合约
+代币水龙头就是让用户免费领代币的网站/应用 <br>
+实现一个简版的`ERC20`水龙头，逻辑非常简单：我们将一些`ERC20`代币转到水龙头合约里，用户可以通过合约的`requestToken()`函数来领取`100`单位的代币，每个地址只能领一次 <br>
+们在水龙头合约中定义3个状态变量
+- `amountAllowed`设定每次能领取代币数量（默认为`100`，不是一百枚，因为代币有小数位数）。
+- `tokenContract`记录发放的`ERC20`代币合约地址。
+- `requestedAddress`记录领取过代币的地址。
+首先用ERC20生成ERC20 token合约，然后得到ERC20合约地址，将其mint 10000枚token, 然后切换到facet.sol合约 填进ERC20合约地址，然后到ERC20合约的transfer函数填facet合约地址，转移<br>
+ERC20的token；然后换一个地址，调用requestToken 这个新地址就得到了amount数量的token  requestedAddress查看新地址有没有领取过facet token <br>
+
 #### Airdrop空投
 `Airdrop`空投合约逻辑非常简单：利用循环，一笔交易将`ERC20`代币发送给多个地址 <br>
 我首先部署ERC20合约 然后铸造了1000-枚token 然后初始化airdrop合约得到其合约地址，然后在ERC20合约的approve了airdrop合约地址1000枚token，
