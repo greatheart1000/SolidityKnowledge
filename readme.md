@@ -23,6 +23,12 @@ Legacy交易的结构包括以下字段： <br>
 ● data：交易的附加数据（可选） <br>
 ● v, r, s：交易的签名 <br>
 
+#### Airdrop空投
+`Airdrop`空投合约逻辑非常简单：利用循环，一笔交易将`ERC20`代币发送给多个地址 <br>
+我首先部署ERC20合约 然后铸造了1000-枚token 然后初始化airdrop合约得到其合约地址，然后在ERC20合约的approve了airdrop合约地址1000枚token，
+再使用airdrop的multiTransferToken报错了  <br>
+理解了 token地址填错了 虽然我授权airdrop地址token了 但是转账ERC20 token仍然走的是原来的ERC20合约地址 而不是airdrop合约地址  <br>
+但是 好像 transferETH和其他的函数getSum是有问题的  <br>
 
 在 Solidity 的内联 Yul/assembly 里，这几个指令都是对 EVM 256-bit 字（word）做位运算或位操作，它们直接对应底层的 EVM opcode，通常比高层 Solidity 运算更**节省 gas**，也更灵活地做**打包/解包**、**掩码**、**位段提取**等操作。
 
