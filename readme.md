@@ -58,6 +58,100 @@ ERC20的token；然后换一个地址，调用requestToken 这个新地址就得
 在 Solidity 的内联 Yul/assembly 里，这几个指令都是对 EVM 256-bit 字（word）做位运算或位操作，它们直接对应底层的 EVM opcode，通常比高层 Solidity 运算更**节省 gas**，也更灵活地做**打包/解包**、**掩码**、**位段提取**等操作。
 
 
+### ECDSA 签名
+ SignatureNFT.sol初始化一个合约，然后填入name,symbol ;
+
+ ```
+ function getMessageHash(address _account, uint256 _tokenId) public pure returns(bytes32){
+        return keccak256(abi.encodePacked(_account, _tokenId));
+    }
+1. 打包消息： 在以太坊的ECDSA标准中，被签名的消息是一组数据的keccak256哈希，为bytes32类型。
+我们可以把任何想要签名的内容利用abi.encodePacked()函数打包，然后用keccak256()计算哈希，作为消息。 
+我们例子中的消息是由一个address类型变量和一个uint256类型变量得到的 
+输入  address _account ="0x95a0f4327580d388C382c41B9400095ADB3E9b06", uint256 _tokenId =0 ; 
+第一步得到消息 msgHash ="0x73a3f8f2d8a0903f990f1e3cd044ae47de40f6294b56eeafc97ab0cf27e04860"  
+
+2. 计算以太坊签名消息： 消息可以是能被执行的交易，也可以是其他任何形式。为了避免用户误签了恶意交易，EIP191提倡在消息前
+加上"\x19Ethereum Signed Message:\n32"字符，并再做一次keccak256哈希，作为以太坊签名消息。经过toEthSignedMessageHash()函数处理后的消息，不能被用于执行交易
+ function toEthSignedMessageHash(bytes32 hash) public pure returns (bytes32) {
+        // 哈希的长度为32
+        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+    }
+第二步得到 以太坊签名消息: toEthSignedMessageHash(msgHash)  = "0x3c2abe33d80d18056efc9c46c8899d81df2c05e846875495db1451720f6c662e"
+
+第三步 利用钱包签名 我们需要使用metamask钱包进行签名
+首先把例子中的私钥导入到小狐狸钱包，然后打开浏览器的console页面：Chrome菜单-更多工具-开发者工具-Console。在连接钱包的状态下（如连接opensea，否则会出现错误），
+依次输入以下指令进行签名
+ethereum.enable()
+account = "0x95a0f4327580d388C382c41B9400095ADB3E9b06"
+以太坊签名消息_ethSignedMessageHash  hash = "0x3c2abe33d80d18056efc9c46c8899d81df2c05e846875495db1451720f6c662e"
+ethereum.request({method: "personal_sign", params: [account, hash]})
+在返回的结果中（Promise的PromiseResult）可以看到创建好的签名。
+ _signature = 0x1dbf2f4d980583d7f419f7087463965d09575f350d5cbe2f92e9565d2e8770053dc278371a9dc5966a0c37c3c62a7d9518f1aace4b98a6db3bbf56e79b455ad21c
+
+4. 通过签名和消息恢复公钥
+    function recoverSigner(bytes32 _ethSignedMessageHash, bytes memory _signature)
+        public
+        pure
+        returns (address)
+    {
+        (bytes32 r, bytes32 s, uint8 v) = splitSignature(_signature);
+
+        return ecrecover(_ethSignedMessageHash, v, r, s);
+    }
+公钥地址 address = recoverSigner(_ethSignedMessageHash ,  _signature)
+
+5. 对比公钥并验证签名： 接下来，我们只需要比对恢复的公钥与签名者公钥_signer是否相等：若相等，则签名有效；否则，签名无效
+function verify(
+        address _signer,
+        address _addr,
+        uint _tokenId,
+        bytes memory signature
+    ) public pure returns (bool) 
+ verify(公钥地址,mint地址 ,tokenId， _signature(Promise的PromiseResult签名地址)) = bool
+
+6.利用签名得到r,s,v  bytes32 r;bytes32 s;uint8 v;
+ function splitSignature(bytes memory sig)
+        public
+        pure
+        returns (
+            bytes32 r,
+            bytes32 s,
+            uint8 v
+        )
+    {
+        // 检查签名长度，65是标准r,s,v签名的长度
+        require(sig.length == 65, "invalid signature length");
+        assembly {
+            /*
+            First 32 bytes stores the length of the signature
+
+            add(sig, 32) = pointer of sig + 32
+            effectively, skips first 32 bytes of signature
+
+            mload(p) loads next 32 bytes starting at the memory address p into memory
+            */
+            // first 32 bytes, after the length prefix
+            r := mload(add(sig, 0x20))
+            // second 32 bytes
+            s := mload(add(sig, 0x40))
+            // final byte (first byte of the next 32 bytes)
+            v := byte(0, mload(add(sig, 0x60)))
+        }
+        /
+ splitSignature(bytes memory sig="0x1dbf2f4d980583d7f419f7087463965d09575f350d5cbe2f92e9565d2e8770053dc278371a9dc5966a0c37c3c62a7d9518f1aace4b98a6db3bbf56e79b455ad21c")
+
+0:
+bytes32: r 0x1dbf2f4d980583d7f419f7087463965d09575f350d5cbe2f92e9565d2e877005
+1:
+bytes32: s 0x3dc278371a9dc5966a0c37c3c62a7d9518f1aace4b98a6db3bbf56e79b455ad2
+2:
+uint8: v 28
+```
+
+
+
+'''
 
 下面一一说明它们的作用、参数含义和典型用途：
 
