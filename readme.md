@@ -100,18 +100,19 @@ ethereum.request({method: "personal_sign", params: [account, hash]})
         return ecrecover(_ethSignedMessageHash, v, r, s);
     }
 公钥地址 address = recoverSigner(_ethSignedMessageHash ,  _signature)
+得到公钥地址 address: 0x78Af9698ec76C85CB3A40DBDa55Df60B20AbB36e
 
 5. 对比公钥并验证签名： 接下来，我们只需要比对恢复的公钥与签名者公钥_signer是否相等：若相等，则签名有效；否则，签名无效
 function verify(
-        address _signer,
-        address _addr,
-        uint _tokenId,
-        bytes memory signature
-    ) public pure returns (bool) 
+        address _signer,  公钥地址 address: 0x78Af9698ec76C85CB3A40DBDa55Df60B20AbB36e
+        address _addr,   0x95a0f4327580d388C382c41B9400095ADB3E9b06
+        uint _tokenId,  0
+ bytes memory signature 签名地址 0x1dbf2f4d980583d7f419f7087463965d09575f350d5cbe2f92e9565d2e8770053dc278371a9dc5966a0c37c3c62a7d9518f1aace4b98a6db3bbf56e79b455ad21c
+    ) public pure returns (bool) 返回true 
  verify(公钥地址,mint地址 ,tokenId， _signature(Promise的PromiseResult签名地址)) = bool
 
 6.利用签名得到r,s,v  bytes32 r;bytes32 s;uint8 v;
- function splitSignature(bytes memory sig)
+ function splitSignature(bytes memory sig) sig: 由消息签名->ETH签名->abi.encode的签名地址得到r,s,v
         public
         pure
         returns (
@@ -147,6 +148,13 @@ bytes32: r 0x1dbf2f4d980583d7f419f7087463965d09575f350d5cbe2f92e9565d2e877005
 bytes32: s 0x3dc278371a9dc5966a0c37c3c62a7d9518f1aace4b98a6db3bbf56e79b455ad2
 2:
 uint8: v 28
+
+ 目前为止 用了 1.VerifySignature.sol  2. ECDSA - Signature.sol 3.ERC721 - 34_ERC721/ERC721.sol
+6. SignatureNFT - Signature.sol 目前还没用到
+SignatureNFT deploy(_name,_symbol,_signer) 这个_signer是什么呢   signer：公钥，项目方签名地址
+公钥地址 address: 0x78Af9698ec76C85CB3A40DBDa55Df60B20AbB36e
+deploy(jj,cc,signer 项目公钥地址)  SignatureNFT合约部署成功 
+
 ```
 
 
