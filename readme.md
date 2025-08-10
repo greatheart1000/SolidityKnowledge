@@ -161,9 +161,8 @@ mint(address _account, uint256 _tokenId, bytes memory _signature)
 mint("0x95a0f4327580d388C382c41B9400095ADB3E9b06", 0, "0x1dbf2f4d980583d7f419f7087463965d09575f350d5cbe2f92e9565d2e8770053dc278371a9dc5966a0c37c3c62a7d9518f1aace4b98a6db3bbf56e79b455ad21c")
 8. 调用ownerOf()函数，可以看到tokenId = 0成功铸造给了地址_account，合约运行成功
 
-
 ```
-
+![mint](./mint.png)
 
 
 '''
