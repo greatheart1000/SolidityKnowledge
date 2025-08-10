@@ -153,7 +153,14 @@ uint8: v 28
 6. SignatureNFT - Signature.sol 目前还没用到
 SignatureNFT deploy(_name,_symbol,_signer) 这个_signer是什么呢   signer：公钥，项目方签名地址
 公钥地址 address: 0x78Af9698ec76C85CB3A40DBDa55Df60B20AbB36e
-deploy(jj,cc,signer 项目公钥地址)  SignatureNFT合约部署成功 
+deploy(jj,cc,signer 项目公钥地址)  SignatureNFT合约部署成功
+
+7. 调用mint()函数利用ECDSA验证签名并铸造
+mint(address _account, uint256 _tokenId, bytes memory _signature)
+签名地址 _signature="0x1dbf2f4d980583d7f419f7087463965d09575f350d5cbe2f92e9565d2e8770053dc278371a9dc5966a0c37c3c62a7d9518f1aace4b98a6db3bbf56e79b455ad21c"
+mint("0x95a0f4327580d388C382c41B9400095ADB3E9b06", 0, "0x1dbf2f4d980583d7f419f7087463965d09575f350d5cbe2f92e9565d2e8770053dc278371a9dc5966a0c37c3c62a7d9518f1aace4b98a6db3bbf56e79b455ad21c")
+8. 调用ownerOf()函数，可以看到tokenId = 0成功铸造给了地址_account，合约运行成功
+
 
 ```
 
