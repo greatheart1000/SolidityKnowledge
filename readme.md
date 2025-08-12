@@ -71,6 +71,10 @@ ERC20的token；然后换一个地址，调用requestToken 这个新地址就得
 输入  address _account ="0x95a0f4327580d388C382c41B9400095ADB3E9b06", uint256 _tokenId =0 ; 
 第一步得到消息 msgHash ="0x73a3f8f2d8a0903f990f1e3cd044ae47de40f6294b56eeafc97ab0cf27e04860"  
 
+
+
+
+
 2. 计算以太坊签名消息： 消息可以是能被执行的交易，也可以是其他任何形式。为了避免用户误签了恶意交易，EIP191提倡在消息前
 加上"\x19Ethereum Signed Message:\n32"字符，并再做一次keccak256哈希，作为以太坊签名消息。经过toEthSignedMessageHash()函数处理后的消息，不能被用于执行交易
  function toEthSignedMessageHash(bytes32 hash) public pure returns (bytes32) {
